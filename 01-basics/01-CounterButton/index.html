@@ -3,10 +3,54 @@
 <head>
   <meta charset="UTF-8">
   <title>CounterButton</title>
+  <style>
+    main {
+      display: flex;
+      align-items: center;
+      height: 60px;
+      border-bottom: 1px solid black;
+    }
+
+    button {
+      margin-left: 50px;
+    }
+    main .circle{
+      position: absolute;
+      transform: translateX(-50%) translateY(-50%);
+      width: 7px;
+      height: 7px;
+    }
+    .circle:before {
+       content: '';
+       position: relative;
+       display: block;
+       width: 300%;
+       height: 300%;
+       box-sizing: border-box;
+       margin-left: -100%;
+       margin-top: -100%;
+       border-radius: 20px;
+       background-color: #fcff38;
+       opacity: .6;
+     }
+
+    .circle:after {
+       content: '';
+       position: absolute;
+       left: 0;
+       top: 0;
+       display: block;
+       width: 100%;
+       height: 100%;
+     }
+  </style>
 </head>
 <body>
 
-<!-- Решение -->
+<main id="app">
+  <button v-click-outside="resetDefault" @click="handlerButton">{{ buttonCounter }}</button>
+  <div :class="{'circle': isActiveCircle}" ref="circle"></div>
+</main>
 
 <script type="module" src="script.js"></script>
 </body>
