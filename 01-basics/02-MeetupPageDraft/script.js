@@ -114,7 +114,7 @@ export const app = new Vue({
     },
     meetupInfoStyle() {
       return this.meetupInfo !== null
-        ? `--bg-url: url(${getMeetupCoverLink(this.meetupInfo?.imageId)})`
+        ? `--bg-url: url(${getMeetupCoverLink(this.meetupInfo.imageId)})`
         : '';
     },
   },
