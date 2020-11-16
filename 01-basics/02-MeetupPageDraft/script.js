@@ -13,7 +13,7 @@ const LOCALE = window.navigator.language;
 const DATE_OPTIONS = {
   year: 'numeric',
   month: 'long',
-  day: 'numeric'
+  day: 'numeric',
 };
 
 /**
@@ -84,7 +84,7 @@ export const app = new Vue({
     return {
       isLoading: false,
       id: MEETUP_ID,
-      meetupInfo: null
+      meetupInfo: null,
     };
   },
 
@@ -94,7 +94,7 @@ export const app = new Vue({
 
   computed: {
     agenda() {
-      return this.meetupInfo?.agenda.map(item => ({
+      return this.meetupInfo?.agenda.map((item) => ({
         id: item.id,
         endsAt: item.endsAt,
         speaker: item.speaker,
@@ -103,7 +103,7 @@ export const app = new Vue({
         description: item.description,
         icon: this.getIconLink(item.type),
         title: this.getTitle(item.title, item.type),
-        isDisplayDot: this.displayDot(item.speaker, item.language)
+        isDisplayDot: this.displayDot(item.speaker, item.language),
       }));
     },
     isEmptyAgenda() {
@@ -112,10 +112,11 @@ export const app = new Vue({
     time() {
       return this.getDateToString(this.meetupInfo?.date);
     },
-    meetapInfoStyle() {
-      if (this.meetupInfo === null) return '';
-      return `--bg-url: url(${getMeetupCoverLink(this.meetupInfo?.imageId)})`;
-    }
+    meetupInfoStyle() {
+      return this.meetupInfo !== null
+        ? `--bg-url: url(${getMeetupCoverLink(this.meetupInfo?.imageId)})`
+        : '';
+    },
   },
 
   methods: {
