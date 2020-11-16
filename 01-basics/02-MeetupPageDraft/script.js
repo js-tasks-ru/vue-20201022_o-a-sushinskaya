@@ -7,7 +7,7 @@ const API_URL = 'https://course-vue.javascript.ru/api';
 const MEETUP_ID = 6;
 
 /** Регион **/
-const LOCALE = 'ru-RU';
+const LOCALE = window.navigator.language;
 
 /** Параметры формата дати */
 const DATE_OPTIONS = {
@@ -84,7 +84,7 @@ export const app = new Vue({
     return {
       isLoading: false,
       id: MEETUP_ID,
-      meetupInfo: {}
+      meetupInfo: null
     };
   },
 
@@ -94,29 +94,27 @@ export const app = new Vue({
 
   computed: {
     agenda() {
-      return this.meetupInfo.agenda ?? [];
+      return this.meetupInfo?.agenda.map(item => ({
+        id: item.id,
+        endsAt: item.endsAt,
+        speaker: item.speaker,
+        startsAt: item.startsAt,
+        language: item.language,
+        description: item.description,
+        icon: this.getIconLink(item.type),
+        title: this.getTitle(item.title, item.type),
+        isDisplayDot: this.displayDot(item.speaker, item.language)
+      }));
     },
     isEmptyAgenda() {
-      return !this.agenda.length;
-    },
-    title() {
-      return this.meetupInfo.title ?? '';
-    },
-    description() {
-      return this.meetupInfo.description ?? '';
-    },
-    organizer() {
-      return this.meetupInfo.organizer ?? '';
-    },
-    place() {
-      return this.meetupInfo.place ?? '';
+      return !this.meetupInfo?.agenda.length;
     },
     time() {
-      return this.getDateToString(this.meetupInfo.date);
+      return this.getDateToString(this.meetupInfo?.date);
     },
     meetapInfoStyle() {
-      if (!this.meetupInfo.imageId) return '';
-      return `--bg-url: url(${getMeetupCoverLink(this.meetupInfo.imageId)})`;
+      if (this.meetupInfo === null) return '';
+      return `--bg-url: url(${getMeetupCoverLink(this.meetupInfo?.imageId)})`;
     }
   },
 
