@@ -6,13 +6,46 @@ const API_URL = 'https://course-vue.javascript.ru/api';
 /** ID митапа для примера; используйте его при получении митапа */
 const MEETUP_ID = 6;
 
+/** Регион **/
+const LOCALE = window.navigator.language;
+
+/** Параметры формата дати */
+const DATE_OPTIONS = {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+};
+
 /**
- * Возвращает ссылку на изображение митапа для митапа
- * @param meetup - объект с описанием митапа (и параметром meetupId)
+ * Возвращает дату с учетом настроек региона
+ * @param date - значение даты в милисекундах
+ * @return {string} - дата с учетом региона
+ */
+function getLocalDate(date) {
+  return new Date(date).toLocaleDateString(LOCALE, DATE_OPTIONS);
+}
+
+/**
+ * Возвращает ссылку на изображение встречи
+ * @param imageId - номер изображения
  * @return {string} - ссылка на изображение митапа
  */
-function getMeetupCoverLink(meetup) {
-  return `${API_URL}/images/${meetup.imageId}`;
+function getMeetupCoverLink(imageId) {
+  return `${API_URL}/images/${imageId}`;
+}
+
+/**
+ * Возвращает информацию о встрече по номеру
+ * @param id - номер встречи
+ * @return {object} - обьект встречи
+ */
+async function getMeetupById(id) {
+  let response = await fetch(`${API_URL}/meetups/${id}`);
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  } else {
+    return await response.json();
+  }
 }
 
 /**
@@ -47,20 +80,68 @@ const agendaItemIcons = {
 export const app = new Vue({
   el: '#app',
 
-  data: {
-    //
+  data() {
+    return {
+      isLoading: false,
+      id: MEETUP_ID,
+      meetupInfo: null,
+    };
   },
 
   mounted() {
-    // Требуется получить данные митапа с API
+    this.getMeetupInfo();
   },
 
   computed: {
-    //
+    agenda() {
+      return this.meetupInfo?.agenda.map((item) => ({
+        id: item.id,
+        endsAt: item.endsAt,
+        speaker: item.speaker,
+        startsAt: item.startsAt,
+        language: item.language,
+        description: item.description,
+        icon: this.getIconLink(item.type),
+        title: this.getTitle(item.title, item.type),
+        isDisplayDot: this.displayDot(item.speaker, item.language),
+      }));
+    },
+    isEmptyAgenda() {
+      return !this.meetupInfo?.agenda.length;
+    },
+    time() {
+      return this.getDateToString(this.meetupInfo?.date);
+    },
+    meetupInfoStyle() {
+      return this.meetupInfo !== null
+        ? `--bg-url: url(${getMeetupCoverLink(this.meetupInfo.imageId)})`
+        : '';
+    },
   },
 
   methods: {
-    // Получение данных с API предпочтительнее оформить отдельным методом,
-    // а не писать прямо в mounted()
-  },
+    async getMeetupInfo() {
+      try {
+        this.isLoading = true;
+        const response = await getMeetupById(this.id);
+        this.meetupInfo = response;
+      } catch (e) {
+        console.log(e);
+      } finally {
+        this.isLoading = false;
+      }
+    },
+    getDateToString(date) {
+      return getLocalDate(date);
+    },
+    getIconLink(type) {
+      return `/assets/icons/icon-${agendaItemIcons[type]}.svg`;
+    },
+    getTitle(title, type) {
+      return title || agendaItemTitles[type];
+    },
+    displayDot(speaker, language) {
+      return Boolean(speaker && language);
+    }
+  }
 });
