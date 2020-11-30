@@ -1,23 +1,42 @@
+import { agendaItemTitles, agendaItemIcons } from './data.js';
+
 export const MeetupAgendaItem = {
   name: 'MeetupAgendaItem',
 
   template: `<div class="meetup-agenda__item">
       <div class="meetup-agenda__item-col">
-        <img class="icon" alt="icon" src="/assets/icons/icon-cal-sm.svg" />
+        <img class="icon" alt="icon" :src="icon" />
       </div>
-      <div class="meetup-agenda__item-col">00:00 - 00:00</div>
+      <div class="meetup-agenda__item-col">{{ agendaItem.startsAt }} - {{ agendaItem.endsAt }}</div>
       <div class="meetup-agenda__item-col">
-        <h5 class="meetup-agenda__title">Заголовок</h5>
+        <h5 class="meetup-agenda__title">{{ title }}</h5>
         <p>
-          <span>Докладчик</span>
-          <span class="meetup-agenda__dot"></span>
-          <span class="meetup-agenda__lang">ru</span>
+          <span>{{ agendaItem.speaker }}</span>
+          <span
+            v-if="isDisplayDot"
+            class="meetup-agenda__dot"></span>
+          <span class="meetup-agenda__lang">{{ agendaItem.language }}</span>
         </p>
-        <p>Описание</p>
+        <p>{{ agendaItem.description }}</p>
       </div>
     </div>`,
 
-  // props
+  props: {
+    agendaItem: {
+      type: Object,
+      required: true,
+    },
+  },
 
-  // Возможно, тут потребуется computed
+  computed: {
+    icon() {
+      return `/assets/icons/icon-${agendaItemIcons[this.agendaItem.type]}.svg`;
+    },
+    title() {
+      return this.agendaItem.title || agendaItemTitles[this.agendaItem.type];
+    },
+    isDisplayDot() {
+      return Boolean(this.agendaItem.speaker && this.agendaItem.language);
+    },
+  },
 };
