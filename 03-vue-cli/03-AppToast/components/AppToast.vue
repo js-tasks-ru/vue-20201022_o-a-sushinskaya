@@ -25,12 +25,11 @@ export default {
       toastList: [],
     };
   },
-
   methods: {
     removeToast(id) {
       setTimeout(() => {
         this.toastList = this.toastList.filter((item) => item.id !== id);
-      }, DELAY)
+      }, DELAY);
     },
     generateIdUniqueId() {
       return Math.random();
